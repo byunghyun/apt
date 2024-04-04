@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import '../styles/globals.scss';
-import { ErrorBoundary } from 'next/dist/client/components/error-boundary';
-import ErrorRoot from './error';
-import AptHeader from '@/components/layout/AptHeader';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,12 +19,8 @@ export default function RootLayout({
   return (
     <html lang='ko'>
       <body className={inter.className}>
-        <ErrorBoundary errorComponent={ErrorRoot}>
-          <div className='flex flex-col min-h-screen'>
-            <AptHeader />
-            {children}
-          </div>
-        </ErrorBoundary>
+        <ToastContainer />
+        {children}
       </body>
     </html>
   );
