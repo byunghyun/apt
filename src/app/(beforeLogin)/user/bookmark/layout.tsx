@@ -1,6 +1,6 @@
 'use client';
 
-import AptModalPopupContainer from '@/app/_components/common/CarsayoModalContainer';
+import AptModalPopupContainer from '@/app/_components/common/AptModalPopupContainer';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
