@@ -15,6 +15,10 @@ body {
   border-width: 1px;
 }
 
+input[type='text']:focus + label.inputLabel {
+  color: red;
+}
+
 .position-center {
   position: absolute;
   z-index: 1000;
