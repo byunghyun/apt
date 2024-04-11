@@ -3,26 +3,24 @@
 import { GitHubUserItemDataInterface } from '@/api/types';
 import GithubUserItem from '@/app/_components/user/GithubUserItem';
 import useUserStore from '@/store/useUserStore';
-import _ from 'lodash';
 import { Virtuoso } from 'react-virtuoso';
 
 export default function BookmarkModalPage() {
   const { bookmarkUserList, setBookmarkUserList } = useUserStore();
   const handleClickEvents = {
     bookMark: (item: GitHubUserItemDataInterface) => () => {
-      const cloneBookmarkUserList = _.cloneDeep(bookmarkUserList);
-      const findBookMarkUser = cloneBookmarkUserList.find((bookMarkUser) => {
+      const findBookMarkUser = bookmarkUserList.find((bookMarkUser) => {
         return bookMarkUser.id === item.id;
       });
       if (findBookMarkUser) {
-        const excludeBookMarkUserList = cloneBookmarkUserList.filter(
+        const excludeBookMarkUserList = bookmarkUserList.filter(
           (bookMarkUser) => {
             return bookMarkUser.id !== findBookMarkUser.id;
           },
         );
         setBookmarkUserList(excludeBookMarkUserList);
       } else {
-        setBookmarkUserList([...cloneBookmarkUserList, item]);
+        setBookmarkUserList([...bookmarkUserList, item]);
       }
     },
   };

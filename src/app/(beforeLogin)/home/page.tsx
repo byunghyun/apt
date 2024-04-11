@@ -4,7 +4,6 @@ import AptInput from '@/app/_components/common/AptInput';
 import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
-import _ from 'lodash';
 import {
   GitHubUserDataInterface,
   GitHubUserItemDataInterface,
@@ -72,19 +71,18 @@ export default function HomePage() {
       setGithubUserDataList([]);
     },
     bookMark: (item: GitHubUserItemDataInterface) => () => {
-      const cloneBookmarkUserList = _.cloneDeep(bookmarkUserList);
-      const findBookMarkUser = cloneBookmarkUserList.find((bookMarkUser) => {
+      const findBookMarkUser = bookmarkUserList.find((bookMarkUser) => {
         return bookMarkUser.id === item.id;
       });
       if (findBookMarkUser) {
-        const excludeBookMarkUserList = cloneBookmarkUserList.filter(
+        const excludeBookMarkUserList = bookmarkUserList.filter(
           (bookMarkUser) => {
             return bookMarkUser.id !== findBookMarkUser.id;
           },
         );
         setBookmarkUserList(excludeBookMarkUserList);
       } else {
-        setBookmarkUserList([...cloneBookmarkUserList, item]);
+        setBookmarkUserList([...bookmarkUserList, item]);
       }
     },
   };
