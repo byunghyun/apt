@@ -2,20 +2,20 @@
 
 import { toastify } from '@/utils/Toastify';
 import { ErrorComponent } from 'next/dist/client/components/error-boundary';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 const ErrorRoot: ErrorComponent = (error, reset) => {
-  const route = useRouter();
   const handleClickEvents = {
     reset: () => {
-      if (reset) {
+      if (reset && reset instanceof Function) {
+        console.log('reset', reset);
         reset();
         return;
       }
 
       toastify.error('reset() 함수가 존재하지 않습니다.');
-      route.replace('/');
+      window.location.reload();
     },
   };
   return (
