@@ -1,11 +1,14 @@
 'use client';
 import { getSearchUserName } from '@/api/user';
 import AptInput from '@/app/_components/common/AptInput';
-import { useQuery } from '@tanstack/react-query';
+import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import _ from 'lodash';
-import { GitHubUserItemDataInterface } from '@/api/types';
+import {
+  GitHubUserDataInterface,
+  GitHubUserItemDataInterface,
+} from '@/api/types';
 import SearchIcon from '@/assets/images/svg/search-icon.svg';
 import GithubUserItem from '@/app/_components/user/GithubUserItem';
 import useUserStore from '@/store/useUserStore';
@@ -18,18 +21,35 @@ export default function HomePage() {
   const [githubUserDataList, setGithubUserDataList] = useState<
     Array<GitHubUserItemDataInterface>
   >([]);
-
   const {
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     data: githubUserData,
-    isFetching,
-    refetch,
-  } = useQuery({
+  } = useInfiniteQuery<GitHubUserDataInterface | undefined, Error>({
     queryKey: ['githubUsers'],
     queryFn: async () =>
-      await getSearchUserName({ userName: searchUserText, page: pageNumber }),
+      await getSearchUserName({
+        userName: searchUserText,
+        page: pageNumber,
+      }),
+    getNextPageParam: (lastPage) => {
+      if (lastPage?.items) {
+        return lastPage.items;
+      }
+    },
+    initialPageParam: 0,
+
+    select: (
+      data: InfiniteData<GitHubUserDataInterface | undefined, unknown>,
+    ) => {
+      return data;
+    },
     retry: false,
     enabled: false,
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 
   const handleChangeEvents = {
@@ -73,7 +93,7 @@ export default function HomePage() {
     setPageNumber((prevPageNumber) => prevPageNumber + 1);
   };
   const Footer = () => {
-    if (isFetching) {
+    if (isFetchingNextPage) {
       return (
         <div className='p-4 flex justify-center items-center bg-slate-600 mx-6 rounded-3xl'>
           <p className='text-slate-200'>Loading...</p>
@@ -86,24 +106,24 @@ export default function HomePage() {
 
   useEffect(() => {
     if (pageNumber > 1) {
-      refetch();
+      fetchNextPage();
     }
   }, [pageNumber]);
 
   useEffect(() => {
     if (pageNumber === 1 && githubUserDataList.length === 0) {
-      refetch();
+      fetchNextPage();
     }
   }, [pageNumber, githubUserDataList]);
 
   useEffect(() => {
-    if (githubUserData?.items && !isFetching) {
-      setGithubUserDataList((prevList) => [
-        ...prevList,
-        ...githubUserData?.items,
-      ]);
+    if (githubUserData?.pages && hasNextPage) {
+      const gitGubUserItems = githubUserData.pages
+        ? githubUserData.pages.flatMap((page) => page?.items ?? [])
+        : [];
+      setGithubUserDataList(gitGubUserItems);
     }
-  }, [githubUserData, isFetching]);
+  }, [githubUserData, hasNextPage]);
 
   return (
     <main className='flex flex-col flex-1'>
